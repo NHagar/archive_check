@@ -1,0 +1,8 @@
+__pycache__/
+.vscode/
+data/
+old/
+presentation/
+.env
+node_modules/
+scrap.py
