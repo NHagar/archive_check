@@ -1,9 +1,6 @@
 # %%
-import collections
-import itertools
 import sqlite3
 
-from fuzzywuzzy import fuzz
 import numpy as np
 import pandas as pd
 import scipy.stats

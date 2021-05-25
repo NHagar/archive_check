@@ -6,9 +6,9 @@ import spacy
 from tqdm import tqdm
 
 def process_document(doc):
-    entities = [{"text": ent.text, "type": ent.label_} for ent in doc.ents]
+    pos = [{"text": tok.text, "pos": tok.tag_} for tok in doc]
     
-    return entities
+    return pos
 
 
 if __name__ == "__main__":
@@ -19,11 +19,11 @@ if __name__ == "__main__":
     services = pd.read_csv("./data/lat_all_urls.csv")
     novdf = services[(services['url'].str.contains("/story/")) &
                 (services['url'].str.contains("2020-11"))]
-    # Extract entities
+    # Extract parts of speech
     docs = []
-    for i in tqdm(nlp.pipe(df['text'].tolist(), n_process=-1)):
-        entities = process_document(i)
-        docs.append(entities)
+    for i in tqdm(nlp.pipe(df['hed'].tolist(), n_process=-1)):
+        pos = process_document(i)
+        docs.append(pos)
     # Build entities dataframe
     for i in enumerate(docs):
         for j in i[1]:
@@ -31,4 +31,4 @@ if __name__ == "__main__":
     docs = [i for l in docs for i in l]
     docs_df = pd.DataFrame(docs)
     # Save entities table
-    docs_df.to_sql("entities", con, if_exists="append")
+    docs_df.to_sql("partsofspeech", con, if_exists="append")
