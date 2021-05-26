@@ -2,6 +2,7 @@
 import sqlite3
 
 import pandas as pd
+import statsmodels.api as sm
 
 # %%
 con = sqlite3.connect("./data/lat.db")
@@ -36,5 +37,12 @@ pos_all = pos_trump.append(pos_biden).fillna(0)
 
 # %%
 X = pos_all.drop(columns=['candidate']).to_numpy()
+X = sm.add_constant(X)
 y = pos_all.candidate.to_numpy()
+# %%
+model = sm.Logit(y, X)
+# %%
+result = model.fit_regularized()
+# %%
+result.summary()
 # %%
