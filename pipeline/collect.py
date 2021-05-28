@@ -78,7 +78,7 @@ class Site:
     def mediacloud_query(self, api_key: str) -> pd.DataFrame:
         """get mediacloud records for associated timeframe/domain
         """
-        media_id = self.__mediacloud_lookup(self.domain)
+        media_id = self.__mediacloud_lookup()
         start_date_mc = str(self.start_date).replace(" ", "T") + "Z" 
         end_date_mc = str(self.end_date).replace(" ", "T") + "Z"
 
