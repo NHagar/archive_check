@@ -5,6 +5,7 @@ import pathlib
 import sqlite3
 
 from pipeline.collect import Site
+from pipeline.db import save_table
 
 from dotenv import load_dotenv
 
@@ -34,15 +35,13 @@ for s in SITES:
         # URL collection
         # Table check/creation 
     site = Site(s, START, END)
+
     logging.info(f"Collecting wayback machine records for {sname}")
     wayback = site.archive_query()
-    logging.info(f"Found {len(wayback)} records. Saving to table")
-    wayback.to_sql("wayback", con)
+    save_table(wayback, "wayback", con)    
     logging.info(f"Collecting GDELT records for {sname}")
     gdelt = site.gdelt_query()
-    logging.info(f"Found {len(gdelt)} records. Saving to table")
-    gdelt.to_sql("gdelt", con)
+    save_table(gdelt, "gdelt", con)
     logging.info(f"Collecting Media Cloud records for {sname}")
     mc = site.mediacloud_query(MC_API_KEY)
-    logging.info(f"Found {len(mc)} records. Saving to table")
-    mc.to_sql("mediacloud", con)
+    save_table(mc, "mediacloud", con)
