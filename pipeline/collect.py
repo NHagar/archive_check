@@ -94,7 +94,6 @@ class Site:
                 'key': api_key
             }
 
-            print("Fetching {} stories starting from {}".format(rows, start))
             r = requests.get( 'https://api.mediacloud.org/api/v2/stories_public/list/', params = params, headers = { 'Accept': 'application/json'} )
             stories = r.json()
 
