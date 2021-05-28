@@ -9,7 +9,7 @@ import requests
 class Site:
     """Parameters and queries for a site's archives across services
     """
-    def __init__(self, domain, start, end) -> None:
+    def __init__(self, domain: str, start: str, end: str) -> None:
         self.domaim = domain
         self.start_date = datetime.strptime(start, "%Y-%m-%d")
         self.end_date = datetime.strptime(end, "%Y-%m-%d")
