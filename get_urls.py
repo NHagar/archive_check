@@ -9,6 +9,7 @@ from pipeline.collect import Site
 from dotenv import load_dotenv
 
 load_dotenv()
+logging.basicConfig(level = logging.INFO)
 
 parser = argparse.ArgumentParser(description='Run URL collection for a set of domains.')
 parser.add_argument("--sites", type=str, required=True, help="comma-separated list of domains to collect")
@@ -23,7 +24,7 @@ DATA_PATH = pathlib.Path("./data")
 MC_API_KEY = os.environ.get("API_KEY_MC")
 
 # For each domain
-logging.info(f"Collecting records for f{len(SITES)} sites, from {START} to {END}.")
+logging.info(f"Collecting records for {len(SITES)} sites, from {START} to {END}.")
 for s in SITES:
     sname = s.split(".")[0]
     # Database check/creation
