@@ -5,7 +5,7 @@ import pathlib
 import sqlite3
 
 from pipeline.collect import Site
-from pipeline.db import save_table
+import pipeline.db
 
 from dotenv import load_dotenv
 
@@ -31,17 +31,20 @@ for s in SITES:
     # Database check/creation
     logging.info(f"Making database for {sname}")
     con = sqlite3.connect(DATA_PATH / f"{sname}.db")
-    # For each service
-        # URL collection
-        # Table check/creation 
     site = Site(s, START, END)
 
-    logging.info(f"Collecting wayback machine records for {sname}")
-    wayback = site.archive_query()
-    save_table(wayback, "wayback", con)    
-    logging.info(f"Collecting GDELT records for {sname}")
-    gdelt = site.gdelt_query()
-    save_table(gdelt, "gdelt", con)
-    logging.info(f"Collecting Media Cloud records for {sname}")
-    mc = site.mediacloud_query(MC_API_KEY)
-    save_table(mc, "mediacloud", con)
+    if not pipeline.db.checkTableExists(con, "wayback"):
+        logging.info(f"Collecting wayback machine records for {sname}")
+        wayback = site.archive_query()
+        pipeline.db.save_table(wayback, "wayback", con)    
+
+
+    if not pipeline.db.checkTableExists(con, "gdelt"):
+        logging.info(f"Collecting GDELT records for {sname}")
+        gdelt = site.gdelt_query()
+        pipeline.db.save_table(gdelt, "gdelt", con)
+
+    if not pipeline.db.checkTableExists(con, "mediacloud"):
+        logging.info(f"Collecting Media Cloud records for {sname}")
+        mc = site.mediacloud_query(MC_API_KEY)
+        pipeline.db.save_table(mc, "mediacloud", con)
