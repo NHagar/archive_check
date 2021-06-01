@@ -104,4 +104,5 @@ class Site:
 
             all_stories.extend(stories)
         stories_df = pd.DataFrame(all_stories)
+        stories_df = stories_df.drop(columns=['story_tags'])
         return stories_df
