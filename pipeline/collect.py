@@ -25,7 +25,7 @@ class Site:
         domain_variants.extend([i+"/" for i in domain_variants])
         media_id = ""
         for k,v in self.mc_ids.iterrows():
-            if v['url'] in domain_variants:
+            if v['url'].split("#")[0] in domain_variants:
                 media_id = f"media_id:{str(v['media_id'])}"
                 break
 
@@ -93,7 +93,6 @@ class Site:
                 'fq': f'publish_date:[{start_date_mc} TO {end_date_mc}]',
                 'key': api_key
             }
-
             r = requests.get( 'https://api.mediacloud.org/api/v2/stories_public/list/', params = params, headers = { 'Accept': 'application/json'} )
             stories = r.json()
 
