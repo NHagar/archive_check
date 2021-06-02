@@ -1,8 +1,12 @@
 # Primary source
 import asyncio
 import pathlib
+import sqlite3
 
+import pandas as pd
 import pyppeteer
+
+con = sqlite3.connect("./data/latimes.db")
 
 index_page = "https://www.latimes.com/sitemap/2020/11"
 
@@ -21,9 +25,7 @@ async def main():
         }''')
         archived_urls.extend(links)
     await browser.close()
-    output_path = pathlib.Path("./data/lat_links.csv")
-    with open(output_path, "w", encoding="utf-8") as f:
-        for i in archived_urls:
-            f.write(f"{i}\n")
+    archived_series = pd.Series(archived_urls, name="url")
+    archived_series.to_sql("onsite", con)
 
 asyncio.get_event_loop().run_until_complete(main())
