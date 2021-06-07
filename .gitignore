@@ -7,3 +7,4 @@ presentation/
 .env
 node_modules/
 scrap.py
+scratch.py
