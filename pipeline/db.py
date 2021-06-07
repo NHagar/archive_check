@@ -34,8 +34,24 @@ class Database:
         urls = set(pd.concat(tab_list).url)
 
         return urls
+
+    def get_urls_from_table(self, tablename: str) -> set[str]:
+        """Get unique URLs stored in a table
+        """
+        cursor = self.con.cursor()
+        cursor.execute(f'''SELECT count(name) 
+                           FROM sqlite_master 
+                           WHERE type='table' AND name='{tablename}' ''')
+        if cursor.fetchone()[0]:
+            urls = pd.read_sql_query(f"SELECT url FROM {tablename}", self.con).tolist()
+            urls = set(urls)
+        else:
+            logging.warn(f"Table {tablename} does not exist.")
+            urls = set()
+
+        return urls
     
-    def clean_url_superset(self, urls:set[str]) -> set[str]:
+    def clean_urls(self, urls:set[str]) -> set[str]:
         """Clean list of URLs according to regex pattern
         """
         p = self.pattern
