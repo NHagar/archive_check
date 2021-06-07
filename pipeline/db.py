@@ -74,8 +74,8 @@ class Database:
         dbcur.close()
         return False
 
-    def save_table(self, df: pd.DataFrame, tablename: str, append: bool) -> None:
-        """Save or append dataframe to table
+    def save_table(self, df: pd.DataFrame, tablename: str, append: bool=True) -> None:
+        """Overwrite or append dataframe to table
         """
         logging.info(f"Found {len(df)} records. Saving to table")
         if append:

@@ -1,6 +1,11 @@
 import glob
 import re
 import sqlite3
+from time import sleep
+
+import newspaper
+import pandas as pd
+from tqdm import tqdm
 
 from pipeline.db import Database
 
@@ -25,3 +30,27 @@ for d in dbs:
     # Compare to already-parsed list
     parsed_urls = db.get_urls_from_table("parsed_articles")
     toparse = cleaned_urls - parsed_urls   
+    # Download loop
+    for i in tqdm(toparse):
+        ntk = newspaper.Article(i)
+        ntk.download()
+        try:
+            ntk.parse()
+
+            result = {
+                "url": i,
+                "url_canonical": ntk.canonical_link,
+                "text": ntk.text,
+                "hed": ntk.title,
+                "pub_date": ntk.publish_date
+            }
+            rdf = pd.DataFrame([result])
+            db.save_table(rdf, "parsed_articles", append=True)
+
+        except newspaper.ArticleException as e:
+            s = str(e)
+            if "404" in s:
+                print("404")
+            else:
+                print("other error")
+        sleep(1)
