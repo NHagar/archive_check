@@ -10,7 +10,6 @@ class Database:
     """Class for database info and operations
     """
     con: sqlite3.Connection
-    pattern: re.Pattern
 
     def list_tables(self) -> list[str]:
         """Generate list of table names in database
@@ -43,7 +42,7 @@ class Database:
                            FROM sqlite_master 
                            WHERE type='table' AND name='{tablename}' ''')
         if cursor.fetchone()[0]:
-            urls = pd.read_sql_query(f"SELECT url FROM {tablename}", self.con).tolist()
+            urls = pd.read_sql_query(f"SELECT url FROM {tablename}", self.con).url.tolist()
             urls = set(urls)
         else:
             logging.warn(f"Table {tablename} does not exist.")
@@ -51,11 +50,10 @@ class Database:
 
         return urls
     
-    def clean_urls(self, urls:set[str]) -> set[str]:
+    def clean_urls(self, urls:set[str], pattern: re.Pattern) -> set[str]:
         """Clean list of URLs according to regex pattern
         """
-        p = self.pattern
-        patterned = [i for i in urls if p.search(i) is not None]
+        patterned = [i for i in urls if pattern.search(i) is not None]
         cleaned = set([i.split("?")[0] for i in patterned])
         
         return cleaned
