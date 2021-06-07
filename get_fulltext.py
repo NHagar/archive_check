@@ -16,7 +16,7 @@ PATTERNS = {
     "vox": re.compile("2020\/11\/[0-9]{1,2}")
 }
 
-dbs = glob.glob("./data/*.db")
+dbs = sorted(glob.glob("./data/*.db"))
 
 for d in dbs:
     # Set up database connection
