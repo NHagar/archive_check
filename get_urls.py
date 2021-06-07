@@ -36,15 +36,15 @@ for s in SITES:
     if not pipeline.db.checkTableExists(con, "wayback"):
         logging.info(f"Collecting wayback machine records for {sname}")
         wayback = site.archive_query()
-        pipeline.db.save_table(wayback, "wayback", con)    
+        pipeline.db.save_table(wayback, "wayback", con, False)    
 
 
     if not pipeline.db.checkTableExists(con, "gdelt"):
         logging.info(f"Collecting GDELT records for {sname}")
         gdelt = site.gdelt_query()
-        pipeline.db.save_table(gdelt, "gdelt", con)
+        pipeline.db.save_table(gdelt, "gdelt", con, False)
 
     if not pipeline.db.checkTableExists(con, "mediacloud"):
         logging.info(f"Collecting Media Cloud records for {sname}")
         mc = site.mediacloud_query(MC_API_KEY)
-        pipeline.db.save_table(mc, "mediacloud", con)
+        pipeline.db.save_table(mc, "mediacloud", con, False)
