@@ -53,7 +53,8 @@ class Database:
     def clean_urls(self, urls:set[str], pattern: re.Pattern) -> set[str]:
         """Clean list of URLs according to regex pattern
         """
-        patterned = [i for i in urls if pattern.search(i) is not None]
+        onsite = self.get_urls_from_table("onsite")
+        patterned = [i for i in urls if pattern.search(i) is not None or i in onsite]
         cleaned = set([i.split("?")[0] for i in patterned])
         
         return cleaned
