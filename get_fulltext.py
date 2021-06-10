@@ -13,7 +13,7 @@ from pipeline.db import Database
 PATTERNS = {
     "journalgazette": re.compile("202011[0-9]{2}"),
     "latimes": re.compile("2020-11-[0-9]{2}"),
-    "vox": re.compile("2020\/(11|10)\/[0-9]{1,2}|[0-9]{8}")
+    "vox": re.compile("2020\/11\/[0-9]{1,2}")
 }
 
 dbs = sorted(glob.glob("./data/*.db"))
