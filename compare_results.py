@@ -24,5 +24,10 @@ for d in databases:
     url_counts = pd.DataFrame(url_counts)
     url_counts.to_csv(dpath / "urlcounts.csv", index=False)
     # LDA
+    # NLP preprocessing
+    nlp = analysis.init_spacy(["advertisement", "Advertisement", "said", "Said"],
+                              ['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
+    for t in tables_cleaned:
+        t.process_body(nlp)
     
     # Headline analysis
