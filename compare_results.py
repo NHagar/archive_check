@@ -29,5 +29,9 @@ for d in databases:
                               ['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
     for t in tables_cleaned:
         t.process_body(nlp)
-    
+        t.build_corpus()
+        t.train_models(20)
+    best_models = [t.get_best_model() for t in tables_cleaned]
+    best_models = pd.DataFrame(best_models)
+    best_models.to_csv(dpath / "lda.csv", index=False)
     # Headline analysis
