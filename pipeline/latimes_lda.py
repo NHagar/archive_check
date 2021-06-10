@@ -35,18 +35,7 @@ adf = novdf.merge(df, how="left", on="url")
 
 
 # %%
-def process_document(doc):
-    lemma_list = [str(tok.text).lower() for tok in doc
-                  if tok.is_alpha and not tok.is_stop]
-    lemmas = " ".join(lemma_list) 
-    return lemmas
 
-
-def process_chunk(texts):
-    preproc_pipe = []
-    for doc in tqdm(nlp.pipe(texts, batch_size=20)):
-        preproc_pipe.append(process_document(doc))
-    return preproc_pipe
 
 
 # %%
