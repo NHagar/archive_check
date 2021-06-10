@@ -84,3 +84,10 @@ class Database:
         else:
             behavior = "replace"
         df.to_sql(tablename, self.con, if_exists=behavior)
+
+    def read_table(self, tablename: str) -> pd.DataFrame:
+        """Read table to dataframe
+        """
+        df = pd.read_sql_query(f"SELECT * FROM {tablename}", self.con)
+
+        return df
