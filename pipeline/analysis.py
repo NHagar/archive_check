@@ -7,7 +7,9 @@ from octis.dataset.dataset import Dataset
 from octis.evaluation_metrics.diversity_metrics import TopicDiversity
 from octis.evaluation_metrics.coherence_metrics import Coherence
 import pandas as pd
+from sklearn.preprocessing import MultiLabelBinarizer
 import spacy
+import statsmodels.api as sm
 from tqdm import tqdm
 
 
@@ -33,6 +35,33 @@ class Table:
         lemmas = [str(tok.text).lower() for tok in doc
                     if tok.is_alpha and not tok.is_stop]
         return lemmas
+    
+    def _get_tags(self, doc: spacy.tokens.Doc) -> set[str]:
+        """spacy processing to get POS tags
+        """
+        pos = set([tok.tag_ for tok in doc])
+
+        return pos
+
+    def _pres_headlines(self):
+        """Grab parts of speech for relevant headline subset
+        """
+        trump_urls = set(self.df[(self.df.hed.str.contains("Trump")) & ~(self.df.hed.str.contains("Jr"))].url_canonical)
+        biden_urls = set(self.df[self.df.hed.str.contains("Biden")].url_canonical)
+        both = trump_urls.intersection(biden_urls)
+        trump_urls = trump_urls - both
+        biden_urls = biden_urls - both
+        pos_trump = self.df[self.df.url_canonical.isin(trump_urls)].hed_pos
+        pos_biden = self.df[self.df.url_canonical.isin(biden_urls)].hed_pos
+
+        return pos_trump, pos_biden
+
+    def _headlines_transform(self, headlines: pd.Series) -> pd.DataFrame:
+        """One-hot encode headline parts of speech
+        """
+        mlb = MultiLabelBinarizer()
+        df = pd.DataFrame(mlb.fit_transform(headlines),columns=mlb.classes_)
+        return df
 
     def count_urls(self) -> int:
         """Count unique URLs in dataframe
@@ -48,6 +77,18 @@ class Table:
         for doc in tqdm(nlp.pipe(self.df.text, batch_size=20)):
             preproc_pipe.append(self._remove_stopwords(doc))
         self.df.loc[:, "body_parsed"] = preproc_pipe
+    
+    def process_hed(self, nlp: spacy.Language) -> None:
+        """Pipeline to process headline text with spacy
+        """
+        preproc_pipe = []
+        for doc in tqdm(nlp.pipe(self.df.hed, batch_size=20)):
+            preproc_pipe.append(self._get_tags(doc))
+        self.df.loc[:, "hed_pos"] = preproc_pipe
+        pos_trump, pos_biden = self._pres_headlines()
+        self.pos_trump = self._headlines_transform(pos_trump)
+        self.pos_biden = self._headlines_transform(pos_biden)
+
     
     def build_corpus(self) -> None:
         """Construct corpus for LDA
@@ -94,3 +135,16 @@ class Table:
         best['service'] = self.name
 
         return best
+    
+    def logistic_regression(self):
+        self.pos_trump.loc[:, 'candidate'] = 0
+        self.pos_biden.loc[:, 'candidate'] = 1
+        pos_all = self.pos_trump.append(self.pos_biden).fillna(0)
+        pos_all = pos_all.sample(frac=1)
+        X = pos_all.drop(columns=['candidate'])
+        X = sm.add_constant(X)
+        y = pos_all.candidate
+        model = sm.Logit(y, X)
+        fitted = model.fit(method="bfgs", maxiter=500)
+
+        return fitted
