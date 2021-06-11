@@ -35,7 +35,7 @@ for d in databases:
     best_models = [t.get_best_model() for t in tables_cleaned]
     best_models = pd.DataFrame(best_models)
     best_models.to_csv(dpath / "lda.csv", index=False)
-    Headline analysis
+    # Headline analysis
     nlp = analysis.init_spacy([], [])
     for t in tables_cleaned:
         t.process_hed(nlp)
