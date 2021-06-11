@@ -43,4 +43,3 @@ for d in databases:
         # TODO: figure out how to format and present these models
         with open(dpath / "model.pickle", "wb") as f:
             pickle.dump(model, f)
-
