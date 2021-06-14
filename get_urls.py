@@ -13,7 +13,7 @@ load_dotenv()
 logging.basicConfig(level = logging.INFO)
 
 parser = argparse.ArgumentParser(description='Run URL collection for a set of domains.')
-parser.add_argument("--sites", type=str, required=True, help="comma-separated list of domains to collect")
+parser.add_argument("--sites", type=str, required=True, help="comma-separated list of domains to collect (e.g., nytimes.com, wsj.com")
 parser.add_argument("--start", type=str, required=True, help="start date, of format Y-M-D")
 parser.add_argument("--end", type=str, required=True, help="end date, of format Y-M-D")
 args = parser.parse_args()

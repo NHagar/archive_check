@@ -12,6 +12,7 @@ databases = list(DATA_PATH.glob("*.db"))
 
 for d in databases:
     # Load and set up file structure
+    # TODO: This is not quite the right file structure
     dpath = RESULTS_PATH / d
     dpath.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(d)

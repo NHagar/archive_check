@@ -41,6 +41,7 @@ class Site:
         url = 'https://web.archive.org/cdx/search/cdx'
         params = {"url": self.domain,
                 "matchType": "domain",
+                "filter": "mimetype:text/html",
                 "from": start_date,
                 "to": end_date,
                 "output": "json"}
