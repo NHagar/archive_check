@@ -1,6 +1,5 @@
 from datetime import datetime
 from io import BytesIO
-from urllib.request import urlopen
 from zipfile import ZipFile
 
 import pandas as pd
@@ -30,6 +29,31 @@ class Site:
                 break
 
         return media_id
+
+    def __gdelt_file_index(self) -> list[str]:
+        """Helper function to get list of GDELT mentions files
+        """
+        index_url = "http://data.gdeltproject.org/gdeltv2/masterfilelist.txt"
+        r = requests.get(index_url)
+        lines = r.text.split("\n")
+        exports = [i.split(" ")[-1] for i in lines]
+        exports = [i for i in exports if "mentions" in i]
+        return exports
+
+    def __gdelt_filter(self) -> list[str]:
+        """Helper function to filter GDELT URLs
+        """
+        mentions_urls = self.__gdelt_file_index()
+
+        date_range = pd.date_range(start=self.start_date, end=self.end_date)
+        date_range_encoded = [10000*dt_time.year + 100*dt_time.month + dt_time.day for dt_time in date_range]
+        date_range_encoded = [f"/{i}" for i in date_range_encoded]
+        relevant_urls = []
+        for i in date_range_encoded:
+            date_urls = [u for u in mentions_urls if i in u]
+            relevant_urls.extend(date_urls)
+        
+        return relevant_urls
     
     def archive_query(self) -> pd.DataFrame:
         """get internet archive records for associated timeframe/domain
@@ -55,22 +79,14 @@ class Site:
     def gdelt_query(self) -> pd.DataFrame:
         """get gdelt records for associated timeframe/domain
         """
-        url = 'http://data.gdeltproject.org/events/'
-        date_range = pd.date_range(start=self.start_date, end=self.end_date)
-        date_range_encoded = [10000*dt_time.year + 100*dt_time.month + dt_time.day for dt_time in date_range]
-        uris = ['{}.export.CSV.zip'.format(i) for i in date_range_encoded]
-        urls = ['{0}{1}'.format(url, i) for i in uris]
-
+        urls = self.__gdelt_filter()        
         df_all = []
-
         for i in urls:
-            page = urlopen(i)
-            zipfile = ZipFile(BytesIO(page.read()))
+            page = requests.get(i)
+            zipfile = ZipFile(BytesIO(page.content))
             filename = zipfile.namelist()[0]
             df = pd.read_csv(zipfile.open(filename), sep='\t', header=None, low_memory=False)
-            site_links = df[df[57].str.contains(self.domain)][57]
-            df_filtered = pd.DataFrame({'url': site_links, 'timestamp': filename})
-            df_filtered.loc[:, 'timestamp'] = df_filtered['timestamp'].map(lambda x: x.split(".")[0])
+            df_filtered = df.loc[df[4]==self.domain, [2,5]]
             df_all.append(df_filtered)
         
         df_all = pd.concat(df_all).drop_duplicates()
