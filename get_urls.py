@@ -5,7 +5,7 @@ import pathlib
 import sqlite3
 
 from pipeline.collect import Site
-import pipeline.db
+from pipeline.db import Database
 
 from dotenv import load_dotenv
 
@@ -13,7 +13,7 @@ load_dotenv()
 logging.basicConfig(level = logging.INFO)
 
 parser = argparse.ArgumentParser(description='Run URL collection for a set of domains.')
-parser.add_argument("--sites", type=str, required=True, help="comma-separated list of domains to collect (e.g., nytimes.com, wsj.com")
+parser.add_argument("--sites", type=str, required=True, help="comma-separated list of domains to collect (e.g., nytimes.com,wsj.com")
 parser.add_argument("--start", type=str, required=True, help="start date, of format Y-M-D")
 parser.add_argument("--end", type=str, required=True, help="end date, of format Y-M-D")
 args = parser.parse_args()
@@ -31,20 +31,20 @@ for s in SITES:
     # Database check/creation
     logging.info(f"Making database for {sname}")
     con = sqlite3.connect(DATA_PATH / f"{sname}.db")
+    database = Database(con)
     site = Site(s, START, END)
 
-    if not pipeline.db.checkTableExists(con, "wayback"):
+    if not database.checkTableExists("wayback"):
         logging.info(f"Collecting wayback machine records for {sname}")
         wayback = site.archive_query()
-        pipeline.db.save_table(wayback, "wayback", con, append=False)    
+        database.save_table(wayback, "wayback", append=False)    
 
-
-    if not pipeline.db.checkTableExists(con, "gdelt"):
+    if not database.checkTableExists("gdelt"):
         logging.info(f"Collecting GDELT records for {sname}")
         gdelt = site.gdelt_query()
-        pipeline.db.save_table(gdelt, "gdelt", con, append=False)
+        database.save_table(gdelt, "gdelt", append=False)
 
-    if not pipeline.db.checkTableExists(con, "mediacloud"):
+    if not database.checkTableExists("mediacloud"):
         logging.info(f"Collecting Media Cloud records for {sname}")
         mc = site.mediacloud_query(MC_API_KEY)
-        pipeline.db.save_table(mc, "mediacloud", con, append=False)
+        database.save_table(mc, "mediacloud", append=False)
