@@ -29,7 +29,7 @@ logging.info(f"Collecting records for {len(SITES)} sites, from {START} to {END}.
 for s in SITES:
     sname = s.split(".")[0]
     # Database check/creation
-    logging.info(f"Making database for {sname}")
+    logging.info(f"Connecting to database for {sname}")
     con = sqlite3.connect(DATA_PATH / f"{sname}.db")
     database = Database(con)
     site = Site(s, START, END)

@@ -4,6 +4,7 @@ from zipfile import ZipFile
 
 import pandas as pd
 import requests
+from tqdm import tqdm
 
 class Site:
     """Parameters and queries for a site's archives across services
@@ -81,7 +82,7 @@ class Site:
         """
         urls = self.__gdelt_filter()        
         df_all = []
-        for i in urls:
+        for i in tqdm(urls):
             page = requests.get(i)
             zipfile = ZipFile(BytesIO(page.content))
             filename = zipfile.namelist()[0]
