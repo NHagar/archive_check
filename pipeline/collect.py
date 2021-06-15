@@ -92,7 +92,7 @@ class Site:
             df_all.append(df_filtered)
         
         df_all = pd.concat(df_all).drop_duplicates()
-        df_all.rename(columns={2: "timestamp", 5: "url"})
+        df_all = df_all.rename(columns={2: "timestamp", 5: "url"})
         return df_all
     
     def mediacloud_query(self, api_key: str) -> pd.DataFrame:
