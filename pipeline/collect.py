@@ -80,6 +80,7 @@ class Site:
     def gdelt_query(self) -> pd.DataFrame:
         """get gdelt records for associated timeframe/domain
         """
+        # TODO: Can we cache this process somehow, so we're not repeatedly processing the same files for all sites?
         urls = self.__gdelt_filter()        
         df_all = []
         for i in tqdm(urls):
@@ -91,6 +92,7 @@ class Site:
             df_all.append(df_filtered)
         
         df_all = pd.concat(df_all).drop_duplicates()
+        df_all.rename(columns={2: "timestamp", 5: "url"})
         return df_all
     
     def mediacloud_query(self, api_key: str) -> pd.DataFrame:

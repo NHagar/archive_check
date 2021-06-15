@@ -23,7 +23,7 @@ class Database:
         return tables
 
     def get_url_superset(self) -> set[str]:
-        """Get full list of URLs across tables, no cleaning/dedupe
+        """Get full list of URLs across tables, no cleaning
         """
         tables = [i for i in self.list_tables() if i != "parsed_articles"]
         tab_list = []

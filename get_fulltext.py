@@ -26,7 +26,9 @@ for d in dbs:
     sitename = d.split("\\")[-1].split(".db")[0]
     p = PATTERNS[sitename]
     urls = db.get_url_superset()
+    print(f"Raw url count: {len(urls)}")
     cleaned_urls = db.clean_urls(urls, p)
+    print(f"Cleaned url count: {len(cleaned_urls)}")
     # Compare to already-parsed list
     parsed_urls = db.get_urls_from_table("parsed_articles")
     toparse = cleaned_urls - parsed_urls   
