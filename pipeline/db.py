@@ -12,7 +12,7 @@ class Database:
     """
     con: sqlite3.Connection
 
-    def list_tables(self) -> list[str]:
+    def list_tables(self) -> "list[str]":
         """Generate list of table names in database
         """
         cursor = self.con.cursor()
@@ -22,7 +22,7 @@ class Database:
 
         return tables
 
-    def get_url_superset(self) -> set[str]:
+    def get_url_superset(self) -> "set[str]":
         """Get full list of URLs across tables, no cleaning
         """
         tables = [i for i in self.list_tables() if i != "parsed_articles"]
@@ -35,7 +35,7 @@ class Database:
 
         return urls
 
-    def get_urls_from_table(self, tablename: str) -> set[str]:
+    def get_urls_from_table(self, tablename: str) -> "set[str]":
         """Get unique URLs stored in a table
         """
         cursor = self.con.cursor()
@@ -52,7 +52,7 @@ class Database:
 
         return urls
 
-    def clean_urls(self, urls: set[str], pattern: re.Pattern) -> set[str]:
+    def clean_urls(self, urls: "set[str]", pattern: re.Pattern) -> "set[str]":
         """Clean list of URLs according to regex pattern
         """
         onsite = self.get_urls_from_table("onsite")
