@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 random.seed(20210423)
 
-def init_spacy(stopwords: list[str], disabled: list[str]) -> None:
+def init_spacy(stopwords: "list[str]", disabled: "list[str]") -> None:
     """Init spacy instance with desired parameters
     """
     nlp = spacy.load("en_core_web_lg", disable=disabled)
@@ -29,14 +29,14 @@ class Table:
     name: str
     df: pd.DataFrame
 
-    def _remove_stopwords(self, doc: spacy.tokens.Doc) -> list[str]:
+    def _remove_stopwords(self, doc: spacy.tokens.Doc) -> "list[str]":
         """spacy processing to remove stopwords
         """
         lemmas = [str(tok.text).lower() for tok in doc
                     if tok.is_alpha and not tok.is_stop]
         return lemmas
     
-    def _get_tags(self, doc: spacy.tokens.Doc) -> set[str]:
+    def _get_tags(self, doc: spacy.tokens.Doc) -> "set[str]":
         """spacy processing to get POS tags
         """
         pos = set([tok.tag_ for tok in doc])
@@ -107,7 +107,7 @@ class Table:
         dataset.load_custom_dataset_from_folder(str(corpus_path))
         self.lda_dataset = dataset
 
-    def train_models(self, max_k: int) -> list[dict]:
+    def train_models(self, max_k: int) -> "list[dict]":
         """Train LDA models over a range of values
         """
         metrics = []

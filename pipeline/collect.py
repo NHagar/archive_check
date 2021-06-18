@@ -31,7 +31,7 @@ class Site:
 
         return media_id
 
-    def __gdelt_file_index(self) -> list[str]:
+    def __gdelt_file_index(self) -> "list[str]":
         """Helper function to get list of GDELT mentions files
         """
         index_url = "http://data.gdeltproject.org/gdeltv2/masterfilelist.txt"
@@ -41,7 +41,7 @@ class Site:
         exports = [i for i in exports if "mentions" in i]
         return exports
 
-    def __gdelt_filter(self) -> list[str]:
+    def __gdelt_filter(self) -> "list[str]":
         """Helper function to filter GDELT URLs
         """
         mentions_urls = self.__gdelt_file_index()
