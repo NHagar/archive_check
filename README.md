@@ -12,6 +12,8 @@
 `--start` desired start date, of format "YYYY-MM-DD"
 `--end` desired end date, of format "YYYY-MM-DD"
 
+`scripts/` contains example one-off scripts for collecting data directly from sites.
+
 `python get_fulltext.py` attempts to scrape full text from all URLs in database. `PATTERNS` can be modified to apply site-specific URL filtering heuristics before scraping.
 
 `python compare_results.py` runs set of analyses (link count, LDA, headline regression) for each database table and outputs result comparisons across services. Links that 404 in the fulltext collection step won't be counted here.
