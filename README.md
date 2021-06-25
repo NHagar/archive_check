@@ -8,7 +8,7 @@
 `python get_urls.py` retrieves URLs for designated domains and date range, then saves to databases. Queries Wayback Machine, GDELT, and Media Cloud
 
 **parameters**
-`--sites` comma-separated list of sites to query
+`--sites` comma-separated list of domains to query, of format: nytimes.com,latimes.com,vox.com
 `--start` desired start date, of format "YYYY-MM-DD"
 `--end` desired end date, of format "YYYY-MM-DD"
 

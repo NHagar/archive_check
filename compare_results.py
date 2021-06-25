@@ -10,6 +10,7 @@ DATA_PATH = pathlib.Path("./data")
 RESULTS_PATH = pathlib.Path("./results")
 databases = list(DATA_PATH.glob("*.db"))
 
+# TODO: Maybe this should be more modular via CLI?
 for d in databases:
     # Load and set up file structure
     dpath = RESULTS_PATH / d.name.replace(".db", "")
@@ -29,18 +30,20 @@ for d in databases:
     url_counts.to_csv(dpath / "urlcounts.csv", index=False)
     # LDA
     # NLP preprocessing
-    # nlp = analysis.init_spacy(["advertisement", "Advertisement", "said", "Said"],
-    #                           ['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
-    # for t in tables_cleaned:
-    #     t.process_body(nlp)
-    #     t.build_corpus()
-    #     t.train_models(20)
-    # best_models = [t.get_best_model() for t in tables_cleaned]
-    # best_models = pd.DataFrame(best_models)
-    # best_models.to_csv(dpath / "lda.csv", index=False)
+    # TODO: Output topic tokens to look for additional problematic words/
+    # topic quality
+    nlp = analysis.init_spacy(stopwords=["advertisement", "Advertisement", "said", "Said"],
+                              disabled=['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
+    for t in tables_cleaned:
+        t.process_body(nlp)
+        t.build_corpus()
+        t.train_models(20)
+    best_models = [t.get_best_model() for t in tables_cleaned]
+    best_models = pd.DataFrame(best_models)
+    best_models.to_csv(dpath / "lda.csv", index=False)
     # # Headline analysis
     # # TODO: convergence warning
-    # nlp = analysis.init_spacy([], [])
+    # nlp = analysis.init_spacy()
     # for t in tables_cleaned:
     #     t.process_hed(nlp)
     #     model = t.logistic_regression()

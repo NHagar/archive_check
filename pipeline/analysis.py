@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 random.seed(20210423)
 
-def init_spacy(stopwords: "list[str]", disabled: "list[str]") -> None:
+def init_spacy(*, stopwords: "list[str]"=[], disabled: "list[str]"=[]) -> None:
     """Init spacy instance with desired parameters
     """
     nlp = spacy.load("en_core_web_lg", disable=disabled)
