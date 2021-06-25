@@ -100,7 +100,10 @@ class Database:
         """Join selected table to parsed articles table
         """
         df = pd.read_sql_query(
-            f"SELECT {tablename}.url, url_canonical, text, hed, pub_date FROM {tablename} LEFT JOIN parsed_articles ON parsed_articles.url = {tablename}.url", self.con)
+            f"SELECT {tablename}.url, url_canonical, text, hed, pub_date \
+                FROM {tablename} \
+                    LEFT JOIN parsed_articles \
+                        ON parsed_articles.url = {tablename}.url", self.con)
         start = pd.to_datetime(start_date, utc=True)
         end = pd.to_datetime(end_date, utc=True)
         # Get rid of failed joins
@@ -110,3 +113,5 @@ class Database:
         df = df[(df.pub_date>=start) & (df.pub_date<=end)]
 
         return df
+
+    # to csv method

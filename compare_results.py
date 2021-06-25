@@ -37,6 +37,7 @@ for d in databases:
     best_models = pd.DataFrame(best_models)
     best_models.to_csv(dpath / "lda.csv", index=False)
     # Headline analysis
+    # TODO: convergence warning
     nlp = analysis.init_spacy([], [])
     for t in tables_cleaned:
         t.process_hed(nlp)

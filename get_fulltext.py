@@ -1,4 +1,4 @@
-import glob
+import pathlib
 import re
 import sqlite3
 from time import sleep
@@ -16,14 +16,16 @@ PATTERNS = {
     "vox": re.compile("2020\/11\/[0-9]{1,2}")
 }
 
-dbs = sorted(glob.glob("./data/*.db"))
+data_path = pathlib.Path("./data")
+
+dbs = sorted(list(data_path.glob("*.db")))
 
 for d in dbs:
     # Set up database connection
     con = sqlite3.connect(d)
     db = Database(con)
     # Load and clean URLs
-    sitename = d.split("\\")[-1].split(".db")[0]
+    sitename = d.name.replace(".db", "")
     p = PATTERNS[sitename]
     urls = db.get_url_superset()
     print(f"Raw url count: {len(urls)}")
