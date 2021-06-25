@@ -17,8 +17,11 @@ for d in databases:
     con = sqlite3.connect(d)
     data = db.Database(con)
     # Join and preprocess
+    # Get list of table names to compare
     tables = [i for i in data.list_tables() if i!="parsed_articles"]
+    # Get article data for each table, filter to desired timeframe
     tables_cleaned = [(t, data.join_to_parsed_clean(t, "2020-11-01", "2020-11-30")) for t in tables]
+    # Instantiate class for each table
     tables_cleaned = [analysis.Table(*t) for t in tables_cleaned]
     # URL counts
     url_counts = [{"service": i.name, "urls": i.count_urls()} for i in tables_cleaned]
@@ -26,21 +29,21 @@ for d in databases:
     url_counts.to_csv(dpath / "urlcounts.csv", index=False)
     # LDA
     # NLP preprocessing
-    nlp = analysis.init_spacy(["advertisement", "Advertisement", "said", "Said"],
-                              ['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
-    for t in tables_cleaned:
-        t.process_body(nlp)
-        t.build_corpus()
-        t.train_models(20)
-    best_models = [t.get_best_model() for t in tables_cleaned]
-    best_models = pd.DataFrame(best_models)
-    best_models.to_csv(dpath / "lda.csv", index=False)
-    # Headline analysis
-    # TODO: convergence warning
-    nlp = analysis.init_spacy([], [])
-    for t in tables_cleaned:
-        t.process_hed(nlp)
-        model = t.logistic_regression()
-        # TODO: figure out how to format and present these models
-        with open(dpath / "model.pickle", "wb") as f:
-            pickle.dump(model, f)
+    # nlp = analysis.init_spacy(["advertisement", "Advertisement", "said", "Said"],
+    #                           ['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
+    # for t in tables_cleaned:
+    #     t.process_body(nlp)
+    #     t.build_corpus()
+    #     t.train_models(20)
+    # best_models = [t.get_best_model() for t in tables_cleaned]
+    # best_models = pd.DataFrame(best_models)
+    # best_models.to_csv(dpath / "lda.csv", index=False)
+    # # Headline analysis
+    # # TODO: convergence warning
+    # nlp = analysis.init_spacy([], [])
+    # for t in tables_cleaned:
+    #     t.process_hed(nlp)
+    #     model = t.logistic_regression()
+    #     # TODO: figure out how to format and present these models
+    #     with open(dpath / "model.pickle", "wb") as f:
+    #         pickle.dump(model, f)

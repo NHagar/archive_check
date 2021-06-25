@@ -97,7 +97,8 @@ class Database:
         return df
 
     def join_to_parsed_clean(self, tablename: str, start_date: str, end_date: str) -> pd.DataFrame:
-        """Join selected table to parsed articles table
+        """Join selected table to parsed articles table,
+        filter to specified time period
         """
         df = pd.read_sql_query(
             f"SELECT {tablename}.url, url_canonical, text, hed, pub_date \
@@ -106,14 +107,11 @@ class Database:
                         ON parsed_articles.url = {tablename}.url", self.con)
         start = pd.to_datetime(start_date, utc=True)
         end = pd.to_datetime(end_date, utc=True)
-        # Get rid of failed joins
-        df = df[(~df.text.isna()) & (~df.pub_date.isna())]
         # Convert and filter datetime
         df.loc[:, "pub_date"] = pd.to_datetime(df.pub_date, utc=True)
         df = df[(df.pub_date>=start) & (df.pub_date<=end)]
 
         return df
-
 
     def table_to_csv(self, tablename: str, filepath: str) -> None:
         """saves database table to CSV file
