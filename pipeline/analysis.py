@@ -119,11 +119,16 @@ class Table:
             topic_diversity = TopicDiversity(topk=10)
             topic_diversity_score = topic_diversity.score(output)
             npmi_score = npmi.score(output)
+            tokens = []
+            for t in output['topics']:
+                tokens.append(" ".join(t))
+            tokens = "\n".join(tokens)
 
             metrics.append({
                 "k": k,
                 "diversity": topic_diversity_score,
-                "coherence": npmi_score
+                "coherence": npmi_score,
+                "tokens": tokens
             })
         
         self.metrics = metrics

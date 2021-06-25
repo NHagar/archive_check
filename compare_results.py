@@ -10,7 +10,7 @@ DATA_PATH = pathlib.Path("./data")
 RESULTS_PATH = pathlib.Path("./results")
 databases = list(DATA_PATH.glob("*.db"))
 
-# TODO: Maybe this should be more modular via CLI?
+# TODO: This should be more modular via CLI
 for d in databases:
     # Load and set up file structure
     dpath = RESULTS_PATH / d.name.replace(".db", "")
@@ -30,8 +30,11 @@ for d in databases:
     url_counts.to_csv(dpath / "urlcounts.csv", index=False)
     # LDA
     # NLP preprocessing
-    # TODO: Output topic tokens to look for additional problematic words/
-    # topic quality
+    # TODO: This process produces terrible LDA models - 
+    # probably a consequence of minimal preprocessing.
+    # We should convert this to an sklearn pipeline, and adhere to
+    # the best practices suggested in this paper -
+    # https://www.tandfonline.com/doi/abs/10.1080/19312458.2018.1430754?journalCode=hcms20
     nlp = analysis.init_spacy(stopwords=["advertisement", "Advertisement", "said", "Said"],
                               disabled=['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
     for t in tables_cleaned:
@@ -41,12 +44,12 @@ for d in databases:
     best_models = [t.get_best_model() for t in tables_cleaned]
     best_models = pd.DataFrame(best_models)
     best_models.to_csv(dpath / "lda.csv", index=False)
-    # # Headline analysis
-    # # TODO: convergence warning
-    # nlp = analysis.init_spacy()
-    # for t in tables_cleaned:
-    #     t.process_hed(nlp)
-    #     model = t.logistic_regression()
-    #     # TODO: figure out how to format and present these models
-    #     with open(dpath / "model.pickle", "wb") as f:
-    #         pickle.dump(model, f)
+    # Headline analysis
+    # TODO: convergence warning
+    nlp = analysis.init_spacy()
+    for t in tables_cleaned:
+        t.process_hed(nlp)
+        model = t.logistic_regression()
+        # TODO: figure out how to format and present these models
+        with open(dpath / "model.pickle", "wb") as f:
+            pickle.dump(model, f)
