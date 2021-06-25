@@ -114,4 +114,10 @@ class Database:
 
         return df
 
-    # to csv method
+
+    def table_to_csv(self, tablename: str, filepath: str) -> None:
+        """saves database table to CSV file
+        """
+        df = self.read_table(tablename)
+        df.to_csv(filepath)
+        print(f"Table {tablename} saved to {filepath}")
