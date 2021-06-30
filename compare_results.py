@@ -11,6 +11,12 @@ DATA_PATH = pathlib.Path("./data")
 RESULTS_PATH = pathlib.Path("./results")
 databases = list(DATA_PATH.glob("*.db"))
 
+LDA_STOPWORDS = {
+    "journalgazette": ["said", "people"],
+    "latimes": ["said", "advertisement", "times"],
+    "vox": ["said", "people"]
+}
+
 parser = argparse.ArgumentParser(description='Run set of analyses for collected data.')
 parser.add_argument("--analyses", type=str, required=True, help="comma-separated list of analyses to run - count,lda,headlines")
 parser.add_argument("--start", type=str, required=True, help="start date, of format Y-M-D")
@@ -21,7 +27,8 @@ analyses = [i.strip() for i in args.analyses.split(",")]
 
 for d in databases:
     # Load and set up file structure
-    dpath = RESULTS_PATH / d.name.replace(".db", "")
+    sname = d.name.replace(".db", "")
+    dpath = RESULTS_PATH / sname
     dpath.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(d)
     data = db.Database(con)
@@ -40,7 +47,7 @@ for d in databases:
     if "lda" in analyses:
         # LDA
         # NLP preprocessing
-        nlp = analysis.init_spacy(disabled=['tok2vec', 'parser', 'ner'])
+        nlp = analysis.init_spacy(stopwords=LDA_STOPWORDS[sname], disabled=['tok2vec', 'parser', 'ner'])
         for t in tables_cleaned:
             t.process_body(nlp)
             t.build_corpus()
