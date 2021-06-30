@@ -96,6 +96,7 @@ class Database:
 
         return df
 
+    # TODO: This produces duplicates for wayback machine
     def join_to_parsed_clean(self, tablename: str, start_date: str, end_date: str) -> pd.DataFrame:
         """Join selected table to parsed articles table,
         filter to specified time period

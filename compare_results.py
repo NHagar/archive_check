@@ -40,13 +40,7 @@ for d in databases:
     if "lda" in analyses:
         # LDA
         # NLP preprocessing
-        # TODO: This process produces terrible LDA models - 
-        # probably a consequence of minimal preprocessing.
-        # We should convert this to an sklearn pipeline, and adhere to
-        # the best practices suggested in this paper -
-        # https://www.tandfonline.com/doi/abs/10.1080/19312458.2018.1430754?journalCode=hcms20
-        nlp = analysis.init_spacy(stopwords=["advertisement", "Advertisement", "said", "Said"],
-                                disabled=['tok2vec', 'tagger', 'parser', 'ner', 'attribute_ruler', 'lemmatizer'])
+        nlp = analysis.init_spacy(disabled=['tok2vec', 'parser', 'ner'])
         for t in tables_cleaned:
             t.process_body(nlp)
             t.build_corpus()

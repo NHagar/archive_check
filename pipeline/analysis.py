@@ -2,10 +2,8 @@ from dataclasses import dataclass
 import pathlib
 import random
 
-from octis.models.LDA import LDA
-from octis.dataset.dataset import Dataset
-from octis.evaluation_metrics.diversity_metrics import TopicDiversity
-from octis.evaluation_metrics.coherence_metrics import Coherence
+from gensim import corpora, models
+from gensim.models.coherencemodel import CoherenceModel
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 import spacy
@@ -29,11 +27,12 @@ class Table:
     name: str
     df: pd.DataFrame
 
-    def _remove_stopwords(self, doc: spacy.tokens.Doc) -> "list[str]":
+    def _text_preprocessing(self, doc: spacy.tokens.Doc) -> "list[str]":
         """spacy processing to remove stopwords
         """
-        lemmas = [str(tok.text).lower() for tok in doc
-                    if tok.is_alpha and not tok.is_stop]
+        no_punct = [i for i in doc if i.is_alpha]
+        no_stop = [i for i in no_punct if not i.is_stop]
+        lemmas = [str(i.lemma_).lower() for i in no_stop]
         return lemmas
     
     def _get_tags(self, doc: spacy.tokens.Doc) -> "set[str]":
@@ -75,7 +74,7 @@ class Table:
         """
         preproc_pipe = []
         for doc in tqdm(nlp.pipe(self.df.text, batch_size=20)):
-            preproc_pipe.append(self._remove_stopwords(doc))
+            preproc_pipe.append(self._text_preprocessing(doc))
         self.df.loc[:, "body_parsed"] = preproc_pipe
     
     def process_hed(self, nlp: spacy.Language) -> None:
@@ -90,46 +89,44 @@ class Table:
         self.pos_biden = self._headlines_transform(pos_biden)
 
     
-    def build_corpus(self) -> None:
+    def build_corpus(self) -> list:
         """Construct corpus for LDA
         """
-        corpus_path = pathlib.Path(f"./data/corpus_{self.name}")
-        corpus_path.mkdir(parents=True, exist_ok=True)
-        with open(corpus_path / "corpus.tsv", "w", encoding="utf-8") as f:
-            f.write("\n".join([" ".join(i) for i in self.df['body_parsed'].tolist()]))
-        with open(corpus_path / "corpus.txt", "w", encoding="utf-8") as f:
-            tokens = self.df['body_parsed'].tolist()
-            wordlist = [i for l in tokens for i in l]
-            wordset = list(set(wordlist))
-            f.write("\n".join(wordset))
-        
-        dataset = Dataset()
-        dataset.load_custom_dataset_from_folder(str(corpus_path))
-        self.lda_dataset = dataset
+        tokens = self.df.body_parsed.tolist()
+        dictionary_LDA = corpora.Dictionary(tokens)
+        lower = round(len(tokens) * 0.005)
+        if lower<=1:
+            lower = 2
+        dictionary_LDA.filter_extremes(no_below=lower, no_above=0.99)
+        corpus = [dictionary_LDA.doc2bow(list_of_tokens) for list_of_tokens in tokens]
+
+        self.dictionary_lda = dictionary_LDA
+        self.corpus = corpus
 
     def train_models(self, max_k: int) -> "list[dict]":
         """Train LDA models over a range of values
         """
         metrics = []
         for k in tqdm(range(3, max_k+1)):
-            model = LDA(num_topics=k, alpha=0.1)
-            output = model.train_model(self.lda_dataset)
-
-            npmi = Coherence(texts=self.lda_dataset.get_corpus(), topk=10, measure='c_npmi')
-            topic_diversity = TopicDiversity(topk=10)
-            topic_diversity_score = topic_diversity.score(output)
-            npmi_score = npmi.score(output)
-            tokens = []
-            for t in output['topics']:
-                tokens.append(" ".join(t))
-            tokens = "\n".join(tokens)
-
-            metrics.append({
+            lda_model = models.LdaModel(self.corpus, 
+                                           num_topics=k,
+                                           id2word=self.dictionary_lda,
+                                           passes=5, 
+                                           alpha="auto",
+                                           eta="auto")
+            cm = CoherenceModel(model=lda_model,
+                                corpus=self.corpus,
+                                dictionary=self.dictionary_lda,
+                                coherence="u_mass")
+            coherence = cm.get_coherence()
+            topics = lda_model.show_topics(num_topics=k)
+            topic_string = "\n".join([f"Topic: {i[0]}, Tokens: {i[1]}" for i in topics])
+            result = {
                 "k": k,
-                "diversity": topic_diversity_score,
-                "coherence": npmi_score,
-                "tokens": tokens
-            })
+                "words": topic_string,
+                "coherence": coherence
+            }
+            metrics.append(result)
         
         self.metrics = metrics
 
