@@ -25,7 +25,7 @@ args = parser.parse_args()
 
 analyses = [i.strip() for i in args.analyses.split(",")]
 
-for d in databases[0:1]:
+for d in databases:
     # Load and set up file structure
     sname = d.name.replace(".db", "")
     dpath = RESULTS_PATH / sname
@@ -57,7 +57,6 @@ for d in databases[0:1]:
         best_models.to_csv(dpath / "lda.csv", index=False)
     if "headlines" in analyses:
         # Headline analysis
-        # TODO: convergence warning
         nlp = analysis.init_spacy()
         for t in tables_cleaned:
             t.process_hed(nlp)
