@@ -69,7 +69,7 @@ class Table:
 
         return urls
 
-    def process_body(self, nlp: spacy.Language) -> None:
+    def process_body(self, nlp: spacy.lang) -> None:
         """Pipeline to process body text with spacy
         """
         preproc_pipe = []
@@ -77,7 +77,7 @@ class Table:
             preproc_pipe.append(self._text_preprocessing(doc))
         self.df.loc[:, "body_parsed"] = preproc_pipe
     
-    def process_hed(self, nlp: spacy.Language) -> None:
+    def process_hed(self, nlp: spacy.lang) -> None:
         """Pipeline to process headline text with spacy
         """
         preproc_pipe = []
