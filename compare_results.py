@@ -25,7 +25,7 @@ args = parser.parse_args()
 
 analyses = [i.strip() for i in args.analyses.split(",")]
 
-for d in databases:
+for d in databases[0:1]:
     # Load and set up file structure
     sname = d.name.replace(".db", "")
     dpath = RESULTS_PATH / sname

@@ -147,6 +147,8 @@ class Table:
         X = sm.add_constant(X)
         y = pos_all.candidate
         model = sm.Logit(y, X)
-        fitted = model.fit(method="bfgs", maxiter=500)
+        fitted = model.fit(method="bfgs", 
+                           maxiter=1000,
+                           skip_hessian=True)
 
         return fitted
