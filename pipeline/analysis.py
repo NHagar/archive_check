@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import pathlib
 import random
 
 from gensim import corpora, models
