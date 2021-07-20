@@ -42,8 +42,10 @@ class Table:
         both = trump_urls.intersection(biden_urls)
         trump_urls = trump_urls - both
         biden_urls = biden_urls - both
+        trump_count = len(trump_urls)
+        biden_count = len(biden_urls)
 
-        return trump_urls, biden_urls
+        return trump_count, biden_count
 
     def count_urls(self) -> int:
         """Count unique URLs in dataframe

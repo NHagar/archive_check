@@ -57,4 +57,9 @@ for d in databases:
         best_models.to_csv(dpath / "lda.csv", index=False)
     if "headlines" in analyses:
         # Candidate headline analysis
-        ""
+        results = []
+        for t in tables_cleaned:
+            trump_count, biden_count = t.pres_headlines()
+            r = {"service": t.name, "trump_count": trump_count, "biden_count": biden_count}
+            results.append(r)
+        pd.DataFrame(results).to_csv(dpath / "headlinecounts.csv")
