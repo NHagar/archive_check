@@ -56,11 +56,5 @@ for d in databases:
         best_models = pd.DataFrame(best_models)
         best_models.to_csv(dpath / "lda.csv", index=False)
     if "headlines" in analyses:
-        # Headline analysis
-        nlp = analysis.init_spacy()
-        for t in tables_cleaned:
-            t.process_hed(nlp)
-            model = t.logistic_regression()
-            # TODO: figure out how to format and present these models
-            with open(dpath / "model.pickle", "wb") as f:
-                pickle.dump(model, f)
+        # Candidate headline analysis
+        ""
