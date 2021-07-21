@@ -11,8 +11,7 @@ get_dataframe <- function(path) {
   name <- str_split(path, "/")[[1]][3]
   df <- read_csv(path)
   df <- df %>% 
-    mutate(site=name) %>% 
-    select(-X1)
+    mutate(site=name)
   
   return(df)
 }
@@ -50,8 +49,6 @@ headline_paths <- list.files(path="./results",
 hed_counts <- lapply(headline_paths, get_dataframe) %>% 
   bind_rows()
 
-
-
 hed_pcts <- hed_counts %>% 
   mutate(pct_biden=biden_count / (biden_count + trump_count)) %>% 
   group_by(site) %>% 
@@ -69,3 +66,13 @@ hed_pcts %>%
            stat="identity") + 
   facet_wrap(vars(site)) + 
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+
+# ----LDA----
+lda_paths <- list.files(path="./results", 
+                             pattern="lda.csv", 
+                             full.names=T,
+                             recursive=T)
+
+lda <- lapply(lda_paths, get_dataframe) %>% 
+  bind_rows()
+

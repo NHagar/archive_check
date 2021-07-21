@@ -4,9 +4,7 @@ import random
 from gensim import corpora, models
 from gensim.models.coherencemodel import CoherenceModel
 import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer
 import spacy
-import statsmodels.api as sm
 from tqdm import tqdm
 
 
@@ -18,6 +16,7 @@ def init_spacy(*, stopwords: "list[str]"=[], disabled: "list[str]"=[]) -> None:
     nlp = spacy.load("en_core_web_lg", disable=disabled)
     for word in stopwords:
         nlp.vocab[word].is_stop = True
+        nlp.vocab[word.title()].is_stop = True
 
     return nlp
 

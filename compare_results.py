@@ -13,7 +13,7 @@ databases = list(DATA_PATH.glob("*.db"))
 
 LDA_STOPWORDS = {
     "journalgazette": ["said", "people"],
-    "latimes": ["said", "advertisement", "times"],
+    "latimes": ["said", "advertisement", "times", "people"],
     "vox": ["said", "people"]
 }
 
@@ -25,7 +25,9 @@ args = parser.parse_args()
 
 analyses = [i.strip() for i in args.analyses.split(",")]
 
+databases = [d for d in databases if "latimes" in d.name]
 for d in databases:
+    print(d)
     # Load and set up file structure
     sname = d.name.replace(".db", "")
     dpath = RESULTS_PATH / sname
@@ -51,7 +53,7 @@ for d in databases:
         for t in tables_cleaned:
             t.process_body(nlp)
             t.build_corpus()
-            t.train_models(20)
+            t.train_models(40)
         best_models = [t.get_best_model() for t in tables_cleaned]
         best_models = pd.DataFrame(best_models)
         best_models.to_csv(dpath / "lda.csv", index=False)
