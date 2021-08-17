@@ -76,3 +76,7 @@ lda_paths <- list.files(path="./results",
 lda <- lapply(lda_paths, get_dataframe) %>% 
   bind_rows()
 
+lda %>% 
+  select(-words) %>% 
+  pivot_wider(-coherence, names_from=site, values_from=k) %>% 
+  kable("latex")

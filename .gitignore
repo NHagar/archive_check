@@ -10,5 +10,4 @@ scrap.py
 scratch.py
 results/
 *.mp4
-.Rproj.user
-.Rhistory
+.Rproj.user/
