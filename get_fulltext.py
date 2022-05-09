@@ -13,12 +13,15 @@ from pipeline.db import Database
 PATTERNS = {
     "journalgazette": re.compile("202011[0-9]{2}"),
     "latimes": re.compile("2020-11-[0-9]{2}"),
-    "vox": re.compile("2020\/11\/[0-9]{1,2}")
+    "vox": re.compile("2020\/11\/[0-9]{1,2}"),
+    "buzzfeednews": re.compile("\/article\/")
 }
 
 data_path = pathlib.Path("./data")
 
-dbs = sorted(list(data_path.glob("*.db")))
+dbs = sorted(list(data_path.glob("*.db")))[0]
+
+dbs = [dbs]
 
 for d in dbs:
     # Set up database connection
