@@ -62,7 +62,7 @@ for s in SITES:
         else:
             logging.info(f"Collecting GDELT records for {sname}")
             gdelt = site.gdelt_query()
-            if gdelt:
+            if gdelt is not None:
                 database.save_table(gdelt, "gdelt", append=append)
             else:
                 logging.info(f"No GDELT records found for {sname}")
