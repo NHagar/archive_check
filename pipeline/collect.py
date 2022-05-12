@@ -90,9 +90,11 @@ class Site:
             df = pd.read_csv(zipfile.open(filename), sep='\t', header=None, low_memory=False)
             df_filtered = df.loc[df[4]==self.domain, [2,5]]
             df_all.append(df_filtered)
-        
-        df_all = pd.concat(df_all).drop_duplicates()
-        df_all = df_all.rename(columns={2: "timestamp", 5: "url"})
+        try:
+            df_all = pd.concat(df_all).drop_duplicates()
+            df_all = df_all.rename(columns={2: "timestamp", 5: "url"})
+        except ValueError:
+            df_all = None
         return df_all
     
     def mediacloud_query(self, api_key: str) -> pd.DataFrame:

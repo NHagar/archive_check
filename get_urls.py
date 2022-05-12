@@ -16,13 +16,22 @@ parser = argparse.ArgumentParser(description='Run URL collection for a set of do
 parser.add_argument("--sites", type=str, required=True, help="comma-separated list of domains to collect (e.g., nytimes.com,wsj.com")
 parser.add_argument("--start", type=str, required=True, help="start date, of format Y-M-D")
 parser.add_argument("--end", type=str, required=True, help="end date, of format Y-M-D")
+parser.add_argument("--behavior", type=str, required=True, help="determines table behavior. one of overwrite, append, pass")
+parser.add_argument("--archives", type=str, required=False, help="comma-separated list of archives to include (mediacloud,wayback,gdelt)")
 args = parser.parse_args()
 
-SITES = [i.strip() for i in args.sites.split(",")]
+SITES = [i.strip().lower() for i in args.sites.split(",")]
 START = args.start
 END = args.end
+ARCHIVES = [i.strip().lower() for i in args.archives.split(",")]
+BEHAVIOR = args.behavior
 DATA_PATH = pathlib.Path("./data")
 MC_API_KEY = os.environ.get("API_KEY_MC")
+
+if BEHAVIOR == "append":
+    append = True
+elif BEHAVIOR == "overwrite":
+    append = False
 
 # For each domain
 logging.info(f"Collecting records for {len(SITES)} sites, from {START} to {END}.")
@@ -34,17 +43,34 @@ for s in SITES:
     database = Database(con)
     site = Site(s, START, END)
 
-    if not database.checkTableExists("wayback"):
-        logging.info(f"Collecting wayback machine records for {sname}")
-        wayback = site.archive_query()
-        database.save_table(wayback, "wayback", append=False)    
+    if BEHAVIOR == "pass":
+        wb_exists = database.checkTableExists("wayback")
+        gdelt_exists = database.checkTableExists("gdelt")
+        mc_exists = database.checkTableExists("mediacloud")
 
-    if not database.checkTableExists("gdelt"):
-        logging.info(f"Collecting GDELT records for {sname}")
-        gdelt = site.gdelt_query()
-        database.save_table(gdelt, "gdelt", append=False)
+    if "wayback" in ARCHIVES:
+        if BEHAVIOR=="pass" and wb_exists:
+            pass
+        else:
+            logging.info(f"Collecting wayback machine records for {sname}")
+            wayback = site.archive_query()
+            database.save_table(wayback, "wayback", append=append)
 
-    if not database.checkTableExists("mediacloud"):
-        logging.info(f"Collecting Media Cloud records for {sname}")
-        mc = site.mediacloud_query(MC_API_KEY)
-        database.save_table(mc, "mediacloud", append=False)
+    if "gdelt" in ARCHIVES:
+        if BEHAVIOR=="pass" and gdelt_exists:
+            pass
+        else:
+            logging.info(f"Collecting GDELT records for {sname}")
+            gdelt = site.gdelt_query()
+            if gdelt:
+                database.save_table(gdelt, "gdelt", append=append)
+            else:
+                logging.info(f"No GDELT records found for {sname}")
+
+    if "mediacloud" in ARCHIVES:
+        if BEHAVIOR=="pass" and mc_exists:
+            pass
+        else:
+            logging.info(f"Collecting Media Cloud records for {sname}")
+            mc = site.mediacloud_query(MC_API_KEY)
+            database.save_table(mc, "mediacloud", append=append)

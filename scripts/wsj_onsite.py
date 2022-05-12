@@ -6,7 +6,7 @@ from playwright.async_api import async_playwright
 
 from tqdm import tqdm
 
-con = sqlite3.connect("./data/wallstreetjournal.db")
+con = sqlite3.connect("./data/wsj.db")
 
 results = []
 
