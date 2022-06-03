@@ -8,11 +8,20 @@ import pandas as pd
 from pipeline import db
 
 # %%
-domains = [("journalgazette.db", "www.journalgazette.net"), 
+domains = [("gazette.db", "gazette.com"),
+           ("jezebel.db", "jezebel.com"),
+           ("nypost.db", "nypost.com"),
+           ("buzzfeednews.db", "www.buzzfeednews.com"),
+           ("journalgazette.db", "www.journalgazette.net"), 
            ("latimes.db", "www.latimes.com"), 
-           ("vox.db", "www.vox.com")]
+           ("mic.db", "www.mic.com"),
+           ("nytimes.db", "www.nytimes.com"),
+           ("politico.db", "www.politico.com"),
+           ("usatoday.db", "www.usatoday.com"),
+           ("vox.db", "www.vox.com"),
+           ("wsj.db", "www.wsj.com")]
 
-ccdirs = list(pathlib.Path("./data/cc_download_articles_v2").iterdir())
+ccdirs = list(pathlib.Path("./data/cc_download_articles").iterdir())
 
 # %%
 for i in domains:
