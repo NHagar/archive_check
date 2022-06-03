@@ -11,10 +11,21 @@ from pipeline.db import Database
 
 # Site-specific patterns to weed out non-story URLs
 PATTERNS = {
-    "journalgazette": re.compile("202011[0-9]{2}"),
-    "latimes": re.compile("2020-11-[0-9]{2}"),
-    "vox": re.compile("2020\/11\/[0-9]{1,2}"),
-    "buzzfeednews": re.compile("\/article\/")
+    "auburnexaminer": re.compile("^(?:(?!\?p=|\/category\/|\/tag\/|\/event\/|\/amp\/|\/wp-content\/).)+$"),
+    "buzzfeednews": re.compile("\/article\/"),
+    "fayettevilleflyer": re.compile("(2020|2015|2010)\/11\/[0-9]{2}"),
+    "gazette": re.compile("\/article_"),
+    "henricocitizen": re.compile("\/articles\/"),
+    "jezebel": re.compile("^(?:(?!\/amp|\.js|img\.).)+$"),
+    "journalgazette": re.compile("(2010|2015|2020)11[0-9]{2}"),
+    "latimes": re.compile("(2010|2015|2020)-11-[0-9]{2}"),
+    "mic": re.compile("^(?:(?!\.jpg|\.js).)+$"),
+    "nypost": re.compile("(2020|2015|2010)\/11\/[0-9]{2}"),
+    "nytimes": re.compile("(2020|2015|2010)\/11\/[0-9]{2}"),
+    "politico": re.compile("(2020|2015|2010)\/11"),
+    "usatoday": re.compile("(2020|2015|2010)\/11\/[0-9]{2}"),
+    "vox": re.compile("(2020|2015|2010)\/11\/[0-9]{1,2}"),
+    "wsj": re.compile("\/articles\/")
 }
 
 data_path = pathlib.Path("./data")
