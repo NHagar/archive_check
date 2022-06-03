@@ -30,9 +30,7 @@ PATTERNS = {
 
 data_path = pathlib.Path("./data")
 
-dbs = sorted(list(data_path.glob("*.db")))[0]
-
-dbs = [dbs]
+dbs = sorted(list(data_path.glob("*.db")))
 
 for d in dbs:
     # Set up database connection
@@ -42,12 +40,12 @@ for d in dbs:
     sitename = d.name.replace(".db", "")
     p = PATTERNS[sitename]
     urls = db.get_url_superset()
-    print(f"Raw url count: {len(urls)}")
+    print(f"Raw url count for {d}: {len(urls)}")
     cleaned_urls = db.clean_urls(urls, p)
-    print(f"Cleaned url count: {len(cleaned_urls)}")
+    print(f"Cleaned url count for {d}: {len(cleaned_urls)}")
     # Compare to already-parsed list
     parsed_urls = db.get_urls_from_table("parsed_articles")
-    error_urls = db.get_ruls_from_table("errors")
+    error_urls = db.get_urls_from_table("errors")
     toparse = cleaned_urls - parsed_urls   
     toparse = toparse - error_urls
     # Download loop
@@ -74,4 +72,4 @@ for d in dbs:
                 db.save_table(pd.DataFrame([{"url": i, "error": "404"}]), "errors", append=True)
             else:
                 print("other error")
-        sleep(1)
+#        sleep(0.5)
