@@ -47,7 +47,9 @@ for d in dbs:
     print(f"Cleaned url count: {len(cleaned_urls)}")
     # Compare to already-parsed list
     parsed_urls = db.get_urls_from_table("parsed_articles")
+    error_urls = db.get_ruls_from_table("errors")
     toparse = cleaned_urls - parsed_urls   
+    toparse = toparse - error_urls
     # Download loop
     for i in tqdm(toparse):
         ntk = newspaper.Article(i)
@@ -69,6 +71,7 @@ for d in dbs:
             s = str(e)
             if "404" in s:
                 print("404")
+                db.save_table(pd.DataFrame([{"url": i, "error": "404"}]), "errors", append=True)
             else:
                 print("other error")
         sleep(1)
