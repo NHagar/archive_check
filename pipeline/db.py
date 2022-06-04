@@ -28,9 +28,11 @@ class Database:
         tables = [i for i in self.list_tables() if i != "parsed_articles"]
         tab_list = []
         for t in tables:
-            t = pd.read_sql_query(f"SELECT url FROM {t}", self.con)
-            tab_list.append(t)
-
+            try:
+                t = pd.read_sql_query(f"SELECT url FROM {t}", self.con)
+                tab_list.append(t)
+            except pd.io.sql.DatabaseError:
+                pass
         urls = set(pd.concat(tab_list).url)
 
         return urls
@@ -43,9 +45,13 @@ class Database:
                            FROM sqlite_master 
                            WHERE type='table' AND name='{tablename}' ''')
         if cursor.fetchone()[0]:
-            urls = pd.read_sql_query(
-                f"SELECT url FROM {tablename}", self.con).url.tolist()
-            urls = set(urls)
+            try:
+                urls = pd.read_sql_query(
+                    f"SELECT url FROM {tablename}", self.con).url.tolist()
+                urls = set(urls)
+            except pd.io.sql.DatabaseError:
+                logging.warn(f"Table {tablename} is empty.")
+                urls = set()
         else:
             logging.warn(f"Table {tablename} does not exist.")
             urls = set()
