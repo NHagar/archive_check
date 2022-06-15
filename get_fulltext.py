@@ -2,6 +2,7 @@ import pathlib
 import re
 import sqlite3
 from time import sleep
+import urllib3
 
 import newspaper
 import pandas as pd
@@ -51,8 +52,8 @@ for d in dbs:
     # Download loop
     for i in tqdm(toparse):
         ntk = newspaper.Article(i)
-        ntk.download()
         try:
+            ntk.download()
             ntk.parse()
 
             result = {
@@ -65,7 +66,7 @@ for d in dbs:
             rdf = pd.DataFrame([result])
             db.save_table(rdf, "parsed_articles", append=True)
 
-        except newspaper.ArticleException as e:
+        except (newspaper.ArticleException, urllib3.exceptions.LocationParseError) as e:
             s = str(e)
             if "404" in s:
                 print("404")
