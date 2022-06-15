@@ -106,19 +106,23 @@ class Database:
         """Join selected table to parsed articles table,
         filter to specified time period
         """
-        df = pd.read_sql_query(
-            f"SELECT {tablename}.url, url_canonical, text, hed, pub_date \
-                FROM {tablename} \
-                    LEFT JOIN parsed_articles \
-                        ON parsed_articles.url = {tablename}.url", self.con)
-        start = pd.to_datetime(start_date, utc=True)
-        end = pd.to_datetime(end_date, utc=True)
-        # Convert and filter datetime
-        df.loc[:, "pub_date"] = pd.to_datetime(df.pub_date, utc=True)
-        df = df[(df.pub_date>=start) & (df.pub_date<=end)]
-        df = df.drop_duplicates()
+        try:
+            df = pd.read_sql_query(
+                f"SELECT {tablename}.url, url_canonical, text, hed, pub_date \
+                    FROM {tablename} \
+                        LEFT JOIN parsed_articles \
+                            ON parsed_articles.url = {tablename}.url", self.con)
+            start = pd.to_datetime(start_date, utc=True)
+            end = pd.to_datetime(end_date, utc=True)
+            # Convert and filter datetime
+            df.loc[:, "pub_date"] = pd.to_datetime(df.pub_date, utc=True)
+            df = df[(df.pub_date>=start) & (df.pub_date<=end)]
+            df = df.drop_duplicates()
 
-        return df
+            return df
+        except pd.io.sql.DatabaseError:
+            logging.warn(f"Table {tablename} is empty.")
+            return pd.DataFrame()
 
     def table_to_csv(self, tablename: str, filepath: str) -> None:
         """saves database table to CSV file
