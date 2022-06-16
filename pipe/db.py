@@ -25,7 +25,7 @@ class Database:
     def get_url_superset(self) -> "set[str]":
         """Get full list of URLs across tables, no cleaning
         """
-        tables = [i for i in self.list_tables() if i != "parsed_articles"]
+        tables = [i for i in self.list_tables() if i not in  ["parsed_articles", "errors"]]
         tab_list = []
         for t in tables:
             try:

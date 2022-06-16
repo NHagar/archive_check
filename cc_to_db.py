@@ -5,7 +5,7 @@ import sqlite3
 
 import pandas as pd
 
-from pipeline import db
+from pipe import db
 
 # %%
 domains = [("gazette.db", "gazette.com"),

@@ -1,14 +1,14 @@
 import pathlib
 import re
 import sqlite3
-from time import sleep
-import urllib3
 
 import newspaper
+from newsplease import NewsPlease
 import pandas as pd
+import requests
 from tqdm import tqdm
 
-from pipeline.db import Database
+from pipe.db import Database
 
 # Site-specific patterns to weed out non-story URLs
 PATTERNS = {
@@ -32,6 +32,7 @@ PATTERNS = {
 data_path = pathlib.Path("./data")
 
 dbs = sorted(list(data_path.glob("*.db")))
+dbs = [i for i in dbs if str(i) in ["data\\wsj.db"]]
 
 for d in dbs:
     # Set up database connection
@@ -51,26 +52,13 @@ for d in dbs:
     toparse = toparse - error_urls
     # Download loop
     for i in tqdm(toparse):
-        ntk = newspaper.Article(i)
         try:
-            ntk.download()
-            ntk.parse()
-
-            result = {
-                "url": i,
-                "url_canonical": ntk.canonical_link,
-                "text": ntk.text,
-                "hed": ntk.title,
-                "pub_date": ntk.publish_date
-            }
-            rdf = pd.DataFrame([result])
+            article = NewsPlease.from_url(i)
+            r = requests.get(i)
+            ad = article.get_serializable_dict()
+            ad['url_canonical'] = r.url
+            rdf = pd.DataFrame([ad])
+            rdf.authors = rdf.authors.apply(lambda x: "__".join(x))
             db.save_table(rdf, "parsed_articles", append=True)
-
-        except (newspaper.ArticleException, urllib3.exceptions.LocationParseError) as e:
-            s = str(e)
-            if "404" in s:
-                print("404")
-                db.save_table(pd.DataFrame([{"url": i, "error": "404"}]), "errors", append=True)
-            else:
-                print("other error")
-#        sleep(0.5)
+        except newspaper.article.ArticleException as e:
+            db.save_table(pd.DataFrame([{"url": i, "error": "404"}]), "errors", append=True)

@@ -5,7 +5,7 @@ import sqlite3
 
 import pandas as pd
 
-from pipeline import db, analysis
+from pipe import db, analysis
 
 DATA_PATH = pathlib.Path("./data")
 RESULTS_PATH = pathlib.Path("./results")

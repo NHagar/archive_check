@@ -4,8 +4,8 @@ import os
 import pathlib
 import sqlite3
 
-from pipeline.collect import Site
-from pipeline.db import Database
+from pipe.collect import Site
+from pipe.db import Database
 
 from dotenv import load_dotenv
 
