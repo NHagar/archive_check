@@ -32,7 +32,6 @@ PATTERNS = {
 data_path = pathlib.Path("./data")
 
 dbs = sorted(list(data_path.glob("*.db")))
-dbs = [i for i in dbs if str(i) in ["data\\wsj.db"]]
 
 for d in dbs:
     # Set up database connection
