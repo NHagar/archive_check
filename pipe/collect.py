@@ -125,8 +125,16 @@ class Site:
 
             all_stories.extend(stories)
         stories_df = pd.DataFrame(all_stories)
-        try:
-            stories_df = stories_df.drop(columns=['story_tags'])
-        except KeyError:
-            pass
+        cols_to_keep = [
+            'publish_date',
+            'url',
+        ]
+        df_cols = stories_df.columns
+        extras = set(df_cols) - set(cols_to_keep)
+        if len(extras) > 0:
+            for col in list(extras):
+                try:
+                    stories_df = stories_df.drop(columns=[col])
+                except KeyError:
+                    pass
         return stories_df

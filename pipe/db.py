@@ -89,7 +89,8 @@ class Database:
         """Overwrite or append dataframe to table
         """
         logging.info(f"Found {len(df)} records. Saving to table")
-        if append:
+        table_has_records = len(self.read_table(tablename)) > 0
+        if append and table_has_records:
             behavior = "append"
         else:
             behavior = "replace"
@@ -98,9 +99,11 @@ class Database:
     def read_table(self, tablename: str) -> pd.DataFrame:
         """Read table to dataframe
         """
-        df = pd.read_sql_query(f"SELECT * FROM {tablename}", self.con)
-
-        return df
+        try:
+            df = pd.read_sql_query(f"SELECT * FROM {tablename}", self.con)
+            return df
+        except pd.io.sql.DatabaseError:
+            return pd.DataFrame()
 
     def join_to_parsed_clean(self, tablename: str, start_date: str, end_date: str) -> pd.DataFrame:
         """Join selected table to parsed articles table,

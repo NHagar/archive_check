@@ -13,9 +13,9 @@ from pipe.db import Database
 # Site-specific patterns to weed out non-story URLs
 PATTERNS = {
     "auburnexaminer": re.compile("^(?:(?!\?p=|\/category\/|\/tag\/|\/event\/|\/amp\/|\/wp-content\/).)+$"),
+    "blockclubchicago": re.compile("2020\/11\/[0-9]{2}"),
     "buzzfeednews": re.compile("\/article\/"),
     "fayettevilleflyer": re.compile("(2020|2015|2010)\/11\/[0-9]{2}"),
-    "gazette": re.compile("^(?:(?!\/amp|\.js|img\.|\/ap\/|\/search\/|\.amp|\/_services|\/register|\/feed\/|\/content\/|\/users\/|\/articles\/|\/tncms\/|\/mailto|\.jpg|\/classifieds\/|ww3\.|\.php|\/housing\/|\/multimedia\/|\/author\/|\/comments\/|\/db_images\/|checkout\.|\/common\/|\/events\/|\/blogs\/).)+$"),
     "henricocitizen": re.compile("\/articles\/"),
     "jezebel": re.compile("^(?:(?!\/amp|\.js|img\.).)+$"),
     "journalgazette": re.compile("(2010|2015|2020)11[0-9]{2}"),
