@@ -18,12 +18,12 @@ while True:
     urls = [i["href"] for i in posts]
     filter_string = f"/{years[0]}/"
 
-    if filter_string not in urls[-1]:
-        break
-    else:
+    if any(filter_string in i for i in urls):
         results.extend(urls)
         print(page)
         page += 1
+    else:
+        break
 
 
 print(f"{len(results)} URLs found")
