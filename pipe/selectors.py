@@ -174,6 +174,7 @@ class FulltextEngine:
                     "pub_date": pub_date,
                     "authors": authors,
                     "body": body,
+                    "url": page.url,
                 }
                 self._save_results(result)
                 
