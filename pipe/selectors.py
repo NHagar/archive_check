@@ -154,17 +154,19 @@ class FulltextEngine:
             for u in tqdm(urls):
                 page.goto(u)
 
+                hed = page.query_selector(self.element_selectors["hed"])
                 if "meta" in self.element_selectors["hed"]:
-                    hed = page.query_selector(self.element_selectors["hed"])["content"]
+                    hed = hed["content"]
                 else:
-                    hed = page.query_selector(self.element_selectors["hed"]).inner_text()
+                    hed = hed.inner_text()
                 
+                pub_date = page.query_selector(self.element_selectors["pub_date"])
                 if "meta" in self.element_selectors["pub_date"]:
-                    pub_date = page.query_selector(self.element_selectors["pub_date"])["content"]
+                    pub_date = pub_date["content"]
                 elif self.sitename=="usatoday":
-                    pub_date = page.query_selector(self.element_selectors["pub_date"])["aria-label"]
+                    pub_date = pub_date["aria-label"]
                 else:
-                    pub_date = page.query_selector(self.element_selectors["pub_date"]).inner_text()
+                    pub_date = pub_date.inner_text()
                 
                 authors = [i.inner_text() for i in page.query_selector_all(self.element_selectors["authors"])]
                 body = [i.inner_text() for i in page.query_selector_all(self.element_selectors["body"])]
