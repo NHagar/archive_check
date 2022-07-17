@@ -14,5 +14,6 @@ for d in dbs:
     db = Database(con)
     # Load and clean URLs
     sitename = d.name.replace(".db", "")
+    print(sitename)
     ft = FulltextEngine(db, sitename)
     ft.scrape_filtered_urls()

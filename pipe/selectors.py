@@ -5,7 +5,7 @@ import pandas as pd
 from playwright.sync_api import sync_playwright
 from tqdm import tqdm
 
-from db import Database
+from pipe.db import Database
 
 # Site-specific patterns to weed out non-story URLs
 PATTERNS = {
@@ -147,24 +147,23 @@ class FulltextEngine:
         """
         Drives Playwright scraping loop for article URLs in filtered set
         """
-        urls = self.filtered_url_set
         with sync_playwright() as p:
             browser = p.chromium.launch()
             page = browser.new_page()
-            for u in tqdm(urls):
+            for u in tqdm(self.filtered_url_set):
                 page.goto(u)
 
                 hed = page.query_selector(self.element_selectors["hed"])
                 if "meta" in self.element_selectors["hed"]:
-                    hed = hed["content"]
+                    hed = hed.get_attribute("content")
                 else:
                     hed = hed.inner_text()
                 
                 pub_date = page.query_selector(self.element_selectors["pub_date"])
                 if "meta" in self.element_selectors["pub_date"]:
-                    pub_date = pub_date["content"]
+                    pub_date = pub_date.get_attribute("content")
                 elif self.sitename=="usatoday":
-                    pub_date = pub_date["aria-label"]
+                    pub_date = pub_date.get_attribute("aria-label")
                 else:
                     pub_date = pub_date.inner_text()
                 
