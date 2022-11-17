@@ -1,3 +1,5 @@
+This project provides a CLI for collecting news data. Given a timeframe and a set of top-level domains, the tool looks for corresponding news articles in the Wayback Machine, GDELT, and Media Cloud.
+
 # Installation
 
 `git clone https://github.com/NHagar/archive_check.git`
