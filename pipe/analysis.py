@@ -1,12 +1,11 @@
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
 
-from gensim import corpora, models
-from gensim.models.coherencemodel import CoherenceModel
 import pandas as pd
 import spacy
+from gensim import corpora, models
+from gensim.models.coherencemodel import CoherenceModel
 from tqdm import tqdm
-
 
 random.seed(20210423)
 
@@ -60,7 +59,7 @@ class Table:
         for doc in tqdm(nlp.pipe(self.df.text, batch_size=20)):
             preproc_pipe.append(self._text_preprocessing(doc))
         self.df.loc[:, "body_parsed"] = preproc_pipe
-    
+
     def build_corpus(self) -> list:
         """Construct corpus for LDA
         """
@@ -80,10 +79,10 @@ class Table:
         """
         metrics = []
         for k in tqdm(range(3, max_k+1)):
-            lda_model = models.LdaModel(self.corpus, 
+            lda_model = models.LdaModel(self.corpus,
                                            num_topics=k,
                                            id2word=self.dictionary_lda,
-                                           passes=5, 
+                                           passes=5,
                                            alpha="auto",
                                            eta="auto")
             cm = CoherenceModel(model=lda_model,
@@ -99,7 +98,7 @@ class Table:
                 "coherence": coherence
             }
             metrics.append(result)
-        
+
         self.metrics = metrics
 
     def get_best_model(self) -> dict:
